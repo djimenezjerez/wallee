@@ -10,7 +10,7 @@ UNIT=MIN
 RANDOM=true
 
 function feh_bg {
-  `exec feh --bg-fill "$DIR/$1"`
+  `exec feh --bg-fill "$1"`
   if [[ "$UNIT" == "HOUR" ]]; then
     sleep $[ $TIME*3600 ]
   elif [[ "$UNIT" == "MIN" ]]; then
@@ -21,9 +21,9 @@ function feh_bg {
 }
 
 while true; do
-  if $RANDOM; then
+  if [ $RANDOM ]; then
     ls $DIR | sort -R | while read f; do
-      feh_bg $f
+      feh_bg "$DIR/$f"
     done
   else
     for f in $DIR/*; do
