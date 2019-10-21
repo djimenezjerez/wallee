@@ -3,14 +3,25 @@
 #set the directory from where wallpapers are to be choosed 
 DIR="$HOME/.config/wallee"
 #set the time interval for transition of wallpaper
-TIME=2
+TIME=5
 #time unit for wallpaper transition [HOUR,MIN,SEC]
 UNIT=MIN
 #pick random order
 RANDOM=true
+#windows manager
+WM=i3
+#primary display
+DISPLAY=:0
 
 function feh_bg {
-  `exec feh --bg-fill "$1"`
+  {
+    `exec feh --bg-max "$1"`
+  } || {
+    exit 1
+  }
+  if [[ $? -ne 0 ]]; then
+    exit 1
+  fi
   if [[ "$UNIT" == "HOUR" ]]; then
     sleep $[ $TIME*3600 ]
   elif [[ "$UNIT" == "MIN" ]]; then
@@ -21,14 +32,19 @@ function feh_bg {
 }
 
 while true; do
-  if [ $RANDOM ]; then
-    ls $DIR | sort -R | while read f; do
-      feh_bg "$DIR/$f"
-    done
+  if pgrep -x "$WM" > /dev/null
+  then
+    if [ $RANDOM ]; then
+      ls $DIR | sort -R | while read f; do
+        feh_bg "$DIR/$f"
+      done
+    else
+      for f in $DIR/*; do
+        feh_bg $f
+      done
+    fi
   else
-    for f in $DIR/*; do
-      feh_bg $f
-    done
+    exit 1
   fi
 done
 ###################################################################
